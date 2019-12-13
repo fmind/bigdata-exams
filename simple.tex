@@ -1,0 +1,651 @@
+% document
+\documentclass[a4paper]{article}
+
+% packages
+\usepackage[box]{automultiplechoice}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+
+% parameters
+\def\multiSymbole{$\spadesuit$}
+
+\begin{document}
+
+% default scoring
+\scoringDefaultS{b=1,v=0,m=-0.25,e=-0.25}
+\scoringDefaultM{v=0,e=-0.25,p=-0.5,formula=NBC*(1/NB)-NMC*(1/NB)}
+
+% number of variations
+\onecopy{5}{
+
+% start number of sections
+\setcounter{section}{-1}
+
+% title / student information
+\begin{minipage}{.4\linewidth}
+    \centering\large\bf Big Data\\Validation of Learning\\University of Luxembourg
+\end{minipage}
+\namefield{\fbox{
+    \begin{minipage}{.5\linewidth}
+        \centering Firstname / Lastname/ Student ID:
+
+        \vspace*{.5cm}\dotfill
+        \vspace*{1mm}
+    \end{minipage}
+}}
+
+% exam description and notation
+\begin{center}\em
+    \vspace*{.15cm}
+
+    \bf Duration: 90 minutes.
+
+    \vspace*{.25cm}
+
+    No documents allowed. The use of electronic calculators or computer is forbidden.
+
+    Questions with the \multiSymbole{} sign may have one or several correct answers.
+
+    Negative points may be attributed to incorrect answers!
+\end{center}
+
+\section{Introduction to Big Data}
+
+\begin{question}{0.1}
+    What are the 3V's of Big Data?
+    \begin{choices}
+        \wrongchoice{Vacuity, Valance, Valid}
+        \wrongchoice{Variable, Valuable, Verify}
+        \correctchoice{Volume, Velocity, Variety}
+        \wrongchoice{Vanquish, Vastness, Verbosity}
+    \end{choices}
+    \explain{c.f., definition from the course lecture.}
+\end{question}
+
+\begin{question}{0.2}
+    How much is 1 Terabyte?
+    \begin{choices}
+        \wrongchoice{$10^{6}$ bytes}
+        \wrongchoice{$10^{9}$ bytes}
+        \correctchoice{$10^{12}$ bytes}
+        \wrongchoice{$10^{15}$ bytes}
+    \end{choices}
+    \explain{1 Terabytes = 1,000,000,000,000 bytes}
+\end{question}
+
+\begin{questionmult}{0.3}
+    Which of these data formats are unstructured?
+    \begin{choices}
+        \wrongchoice{CSV files}
+        \correctchoice{PDF files}
+        \wrongchoice{SQL databases}
+        \correctchoice{Social profiles}
+    \end{choices}
+    \explain{There is no inherent structure in PDF files and social media posts}
+\end{questionmult}
+
+\section{Relational databases --- reminders}
+
+\begin{question}{1.1}
+    What is a database?
+    \begin{choices}
+        \correctchoice{a software that can organize collections of data}
+        \wrongchoice{a software that can run as a managed system service}
+        \wrongchoice{a software that can query data with the SQL language}
+        \wrongchoice{a software that can distribute data across a cluster}
+    \end{choices}
+    \explain{example: PostgreSQL, SQLite, MongoDB, Datomic, Neo4j \ldots}
+\end{question}
+
+\begin{questionmult}{1.2}
+    Which schema constraints can be applied to a relation column?
+    \begin{choices}
+        \correctchoice{a type (e.g., integer, string, boolean …)}
+        \wrongchoice{a file location (e.g., stored in /var/databases/users.sqlite)}
+        \correctchoice{a maximum size (e.g. 0 < id < 65535, name < 255 characters)}
+        \correctchoice{a referential integrity (e.g., must reference an existing record)}
+    \end{choices}
+    \explain{The goal of a schema is to abstract data definitions from physical implementations. Thus, you cannot specify the file location.}
+\end{questionmult}
+
+\begin{questionmult}{1.3}
+    What are the goals of database normalization?
+    \begin{choices}
+        \wrongchoice{to improve query performances by creating column indexes that speed up read accesses}
+        \correctchoice{to improve data integrity (e.g., an entry should be determined only by its primary key)}
+        \correctchoice{to avoid data anomalies (e.g., when a course is deleted, the lecture must also be deleted)}
+        \correctchoice{to reduce data redundancy by preventing the same information to be expressed in multiple rows}
+    \end{choices}
+    \explain{The goal is to improve the logical structure at the expense of the overall access performance.}
+\end{questionmult}
+
+\begin{questionmult}{1.4}
+    Which of these languages are valid aspects of SQL?
+    \begin{choices}
+        \correctchoice{DQL: Data Query Language}
+        \correctchoice{DCL: Data Control Language}
+        \correctchoice{DDL: Data Definition Language}
+        \correctchoice{DTL: Data Transaction Language}
+    \end{choices}
+    \explain{They are all valid dialect of the SQL language.}
+\end{questionmult}
+
+\begin{question}{1.5}
+    Which SQLite operator should be used to restrict the maximum number of records returned by a SELECT query?
+    \begin{choices}
+        \wrongchoice{WHERE}
+        \wrongchoice{EXCEPT}
+        \correctchoice{LIMIT}
+        \wrongchoice{INTERSECT}
+    \end{choices}
+    \explain{example: SELECT name FROM students LIMIT 10}
+\end{question}
+
+\section{Relational databases --- internals}
+
+\begin{questionmult}{2.1}
+    Why is it better to store records by attributes/columns (DSM) instead of tuples/rows (NSM)?
+    \begin{choices}
+        \wrongchoice{to support records with variable sizes}
+        \wrongchoice{to write intensive application (insert)}
+        \correctchoice{to perform data aggregation (e.g., min, avg)}
+        \wrongchoice{to retrieve a whole record by its primary key (id)}
+    \end{choices}
+    \explain{DSM allows to quickly read a single column and perform aggregations (e.g., average of student grades). On the other hand, attributes are written in separate files, which is not a good fit to retrieve a single record and for write intensive applications.}
+\end{questionmult}
+
+\begin{question}{2.2}
+    What is the worst case algorithmic complexity of retrieving a single tuple in a relation of size N where there is no index?
+    \begin{choices}
+        \wrongchoice{O(1) (you can access the tuple in almost an instant)}
+        \correctchoice{O(N) (you have to read the whole relation at most once)}
+        \wrongchoice{O(log N) (you can divide the search space by 2 at each step)}
+        \wrongchoice{O($N^2$) (you have to read the whole relation multiple times)}
+    \end{choices}
+    \explain{You must loop through the relation and find the tuple (with at most N iterations).}
+\end{question}
+
+\begin{question}{2.3}
+    Which sentence defines the Durability property of ACID?
+    \begin{choices}
+        \wrongchoice{any transaction will bring the database from one valid state to another valid state}
+        \wrongchoice{if one part of the transaction fails, the entire transaction fails and the database state is left unchanged}
+        \correctchoice{once a transaction has been committed, it will remain so, even in the event of a power loss, crash or error}
+        \wrongchoice{the concurrent execution of transaction results in a state that would be obtained if they were executed serially}
+    \end{choices}
+    \explain{c.f., definition from the course lecture.}
+\end{question}
+
+\begin{questionmult}{2.4}
+    Which of these relational algebra operators can remove columns from a relation?
+    \begin{choices}
+        \wrongchoice{UNION}
+        \wrongchoice{SELECTION}
+        \wrongchoice{DIFFERENCE}
+        \correctchoice{PROJECTION}
+    \end{choices}
+    \explain{e.g., PROJECTION(R1, ['name', 'age']) will keep the name and age column.}
+\end{questionmult}
+
+\begin{question}{2.5}
+    Given these two relations: STUDENT(studentid, name, age) with 30 tuples and GRADE(studentid, class, score) with 20 tuples. What is the total number of tuples generated by JOIN(STUDENT, GRADE)?
+    \begin{choices}
+        \wrongchoice{20}
+        \wrongchoice{30}
+        \wrongchoice{50}
+        \correctchoice{600}
+    \end{choices}
+    \explain{JOIN performs a Cartesian product between relations: |STUDENT| x |GRADE| = 20 $\times$ 30 = 600.}
+\end{question}
+
+\section{NoSQL and NewSQL databases}
+
+\begin{questionmult}{3.1}
+    What are the main benefits of NoSQL databases?
+    \begin{choices}
+        \wrongchoice{to better support ACID properties and transactions}
+        \wrongchoice{to support schema and constraints in data definitions}
+        \correctchoice{to improve read/write performance through horizontal scaling}
+        \correctchoice{to partition records across multiple computers (i.e., clusters)}
+    \end{choices}
+    \explain{The main goal of NoSQL is to improve the read/write scalability of databases through horizontal scaling.}
+\end{questionmult}
+
+\begin{question}{3.2}
+    Which sentence defines the Availability property of the CAP theorem?
+    \begin{choices}
+        \wrongchoice{Availability is not a property of the CAP theorem}
+        \wrongchoice{all clients have the same view of the data at any time}
+        \wrongchoice{the system has to continue working even under arbitrary partitions}
+        \correctchoice{every request to a non-failed node must result in a correct response}
+    \end{choices}
+    \explain{c.f., definition in the course lecture.}
+\end{question}
+
+\begin{question}{3.3}
+    What is horizontal scaling?
+    \begin{choices}
+        \correctchoice{the ability to add commodity hardware to a cluster}
+        \wrongchoice{the ability to increase the resources of a single server}
+        \wrongchoice{the ability to stack more servers horizontally on a rack}
+        \wrongchoice{the ability to extend the number of columns in a relation}
+    \end{choices}
+    \explain{Horizontal scaling is about adding more computer resources to a cluster.}
+\end{question}
+
+\begin{question}{3.4}
+    What is the data model of a document database such as MongoDB?
+    \begin{choices}
+        \wrongchoice{single key -> single value}
+        \correctchoice{(collection, key) -> value}
+        \wrongchoice{(row, column, time) -> value}
+        \wrongchoice{a graph G with vertices V and edges E: G = (V, E)}
+    \end{choices}
+    \explain{MongoDB manages documents stored in collections and indexed by a primary key.}
+\end{question}
+
+\begin{question}{3.5}
+    What does this MongoDB query do: “student.find(\{'age': 1\}, \{\})”?
+    \begin{choices}
+        \wrongchoice{find the age of all students}
+        \correctchoice{find all students whose age is 1}
+        \wrongchoice{find all students sorted by their age}
+        \wrongchoice{increment the age of all students by 1}
+    \end{choices}
+    \explain{The first parameter is a SELECTION clause (filter rows). The second parameter is a PROJECTION clause (filter columns).}
+\end{question}
+
+\section{MapReduce model}
+
+\begin{questionmult}{4.1}
+    What is MapReduce?
+    \begin{choices}
+        \correctchoice{a system designed for batch processing}
+        \wrongchoice{a system designed for streaming processing}
+        \correctchoice{a model based on the functional programming paradigm}
+        \correctchoice{a framework that supports distributed data processing}
+    \end{choices}
+    \explain{MapReduce is designed to analyzed large amount of data using functional paradigms and distributed processing in batch mode.}
+\end{questionmult}
+
+\begin{question}{4.2}
+    How can a system based on MapReduce scale?
+    \begin{choices}
+        \correctchoice{by adding more computers to the cluster}
+        \wrongchoice{by enforcing ACID properties on transactions}
+        \wrongchoice{by improving the hardware of existing machines}
+        \wrongchoice{by switching the execution from CPU to GPU cards}
+    \end{choices}
+    \explain{The infrastructure scales by adding cheap and convenient machines to a cluster.}
+\end{question}
+
+\begin{question}{4.3}
+    Which one of these systems has the lowest storage latency?
+    \begin{choices}
+        \wrongchoice{rack disk}
+        \wrongchoice{local disk}
+        \correctchoice{local DRAM}
+        \wrongchoice{datacenter DRAM}
+    \end{choices}
+    \explain{Local DRAM is the fastest unit to access out of these systems.}
+\end{question}
+
+\begin{question}{4.4}
+    What is the goal of the Reduce function in MapReduce?
+    \begin{choices}
+        \wrongchoice{to apply a function on every element of a collection}
+        \wrongchoice{to group values in a collection that are identified by a key}
+        \correctchoice{to accumulate a result from a collection with a given function}
+        \wrongchoice{to remove every element when the output of a predicate function is true}
+    \end{choices}
+    \explain{e.g., reduce can aggregate numbers with the addition operator.}
+\end{question}
+
+\begin{question}{4.5}
+    Which map function should be used to count the total number of characters in a collection of words?
+    \begin{choices}
+        \wrongchoice{lambda word: [word, 1]}
+        \wrongchoice{lambda word: ['cnt', 1]}
+        \wrongchoice{lambda word: [word, len(word)]}
+        \correctchoice{lambda word: ['cnt', len(word)]}
+    \end{choices}
+    \explain{You must associate the length of each word to a single key and then aggregate their length.}
+\end{question}
+
+\section{Hadoop and Spark}
+
+\begin{questionmult}{5.1}
+    What are the main improvements of Spark over Hadoop?
+    \begin{choices}
+        \correctchoice{Spark can retain intermediate results in RAM}
+        \wrongchoice{Spark can process very large datasets in parallel}
+        \wrongchoice{Spark can work with a cluster of computers instead of a single computer}
+        \correctchoice{Spark provides convenient functions such as filter, flatmap, and takeSample}
+    \end{choices}
+    \explain{The main improvements Spark provides is a high-level framework and the ability to store intermediate data in RAM.}
+\end{questionmult}
+
+\begin{questionmult}{5.2}
+    What are the properties of a Resilient Distributed Dataset (RDD)?
+    \begin{choices}
+        \wrongchoice{mutable (can be changed)}
+        \correctchoice{can be processed in parallel}
+        \correctchoice{represents a collection of data}
+        \correctchoice{can be distributed across multiple computers}
+    \end{choices}
+    \explain{RDDs are a collection of data distributed across multiple computers. However, they are not mutable in order to support parallel operations.}
+\end{questionmult}
+
+\begin{questionmult}{5.3}
+    Which types of operation can be performed on a RDD?
+    \begin{choices}
+        \correctchoice{actions}
+        \wrongchoice{extractions}
+        \wrongchoice{visualizations}
+        \correctchoice{transformations}
+    \end{choices}
+    \explain{Transformations process RDD and create new ones (e.g., filter). Actions perform side-effects (e.g., take).}
+\end{questionmult}
+
+\begin{question}{5.4}
+    What is the correct definition of Lazy Evaluation?
+    \begin{choices}
+        \wrongchoice{the system only supports batch processing}
+        \correctchoice{the system will not compute unless it has to}
+        \wrongchoice{the teacher procrastinates to prepare the exam}
+        \wrongchoice{the system requires a cluster of at least 2 computers}
+    \end{choices}
+    \explain{Lazy evaluation means the }
+\end{question}
+
+\begin{question}{5.5}
+    What is the output of map(lambda x: [x, 1]) applied to [“big data big”]?
+    \begin{choices}
+        \correctchoice{[[“big data big”, 1]]}
+        \wrongchoice{[[“big”, 2], [“data”, 1]]}
+        \wrongchoice{[[“big”, 1], [“data”, 1”], [“big”, 1]]}
+        \wrongchoice{The function will raise an error}
+    \end{choices}
+    \explain{The collection contains a single value. Thus, it will simply put the value in a new array next to the value 1.}
+\end{question}
+
+\section{Datalog model}
+
+\begin{questionmult}{6.1}
+    Which information are required to represent a fact?
+    \begin{choices}
+        \correctchoice{an entity (e.g. Bob)}
+        \correctchoice{an attribute (e.g., loves)}
+        \correctchoice{a value (e.g., pizza)}
+        \correctchoice{a time stamp (e.g., today at 10am)}
+    \end{choices}
+    \explain{e.g., Donald Trump (entity) is the president of (attribute) the USA (value) since 2017 (time stamp)}
+\end{questionmult}
+
+\begin{questionmult}{6.2}
+    Which types of transaction are supported by Datalog systems?
+    \begin{choices}
+        \correctchoice{add a fact}
+        \wrongchoice{update a fact}
+        \wrongchoice{delete a fact}
+        \correctchoice{retract a fact}
+    \end{choices}
+    \explain{You cannot update or delete facts. You can only add them or retract them if they are not true anymore.}
+\end{questionmult}
+
+\begin{question}{6.3}
+    What does this Datalog clause do: [42 :email ?email]?
+    \begin{choices}
+        \wrongchoice{find the list of emails}
+        \correctchoice{find the email of a particular person}
+        \wrongchoice{find the list of persons with 42 emails}
+        \wrongchoice{find the list of persons with an email attribute}
+    \end{choices}
+    \explain{Since the entity (42) and the attribute (:email) are fixed, the clause matches the email attribute of the entity.}
+\end{question}
+
+\section{Distributed streaming}
+
+\begin{questionmult}{7.1}
+    Which concepts are specific to the Actor Model?
+    \begin{choices}
+        \wrongchoice{methods}
+        \correctchoice{messages}
+        \correctchoice{mailboxes}
+        \correctchoice{asynchronous}
+    \end{choices}
+    \explain{Actors communicate by sending asynchronous messages to process mailboxes.}
+\end{questionmult}
+
+\begin{question}{7.2}
+    Which sentence defines a concurrent execution model?
+    \begin{choices}
+        \wrongchoice{doing a lot of things at once}
+        \wrongchoice{dealing with one task after the other}
+        \correctchoice{dealing with a lot of tasks at once}
+        \wrongchoice{maintaining a competition between workers}
+    \end{choices}
+    \explain{A concurrent execution model can interleave multiple processes (e.g., download multiple files from the Internet)}
+\end{question}
+
+\begin{questionmult}{7.3}
+    Which of these components are required by a distributed streaming system?
+    \begin{choices}
+        \wrongchoice{NoSQL databases}
+        \correctchoice{Message brokers}
+        \correctchoice{Worker processes}
+        \wrongchoice{MapReduce algorithms}
+    \end{choices}
+    \explain{Brokers store messages which are then distributed across workers.}
+\end{questionmult}
+
+\section{Statistics and data analysis}
+
+\begin{question}{8.1}
+    What is the definition of statistics?
+    \begin{choices}
+        \wrongchoice{the science of creating useful datasets}
+        \wrongchoice{the science of producing research studies}
+        \correctchoice{the science of drawing conclusion from data}
+        \wrongchoice{the science of creating nice-looking visualization}
+    \end{choices}
+    \explain{The goal of statistic is to create meaningful metrics from data.}
+\end{question}
+
+\begin{questionmult}{8.2}
+    Which of these measures can quantify the centrality of a distribution?
+    \begin{choices}
+        \correctchoice{mean}
+        \correctchoice{median}
+        \wrongchoice{standard deviation}
+        \wrongchoice{inter-quartile range}
+    \end{choices}
+    \explain{Mean and median quantify the centrality of a distribution while SD and IQR quantify the dispersion.}
+\end{questionmult}
+
+\begin{questionmult}{8.3}
+    Which of these measures are statistically robust?
+    \begin{choices}
+        \wrongchoice{mean}
+        \correctchoice{median}
+        \wrongchoice{standard deviation}
+        \correctchoice{inter-quartile range}
+    \end{choices}
+    \explain{Only the median and the IQR are robust (i.e., when Bill Gates enters in a bar).}
+\end{questionmult}
+
+\begin{question}{8.4}
+    What is the percentile value associated with the 3rd quartile (Q3)?
+    \begin{choices}
+        \wrongchoice{3}
+        \wrongchoice{25}
+        \correctchoice{66}
+        \wrongchoice{75}
+    \end{choices}
+    \explain{The 3rd quartile is associated with the 75th percentile.}
+\end{question}
+
+\begin{question}{8.5}
+    Which method is used to compute the Pearson-r coefficient?
+    \begin{choices}
+        \correctchoice{corr}
+        \wrongchoice{crosstab}
+        \wrongchoice{describe}
+        \wrongchoice{value\_counts}
+    \end{choices}
+    \explain{The Pearson-r coefficient measures the linear correlation between two variables.}
+\end{question}
+
+
+\section{Communication and visualization}
+
+\begin{questionmult}{9.1}
+    Which visual attributes can be used to represent nominal/categorical variables?
+    \begin{choices}
+        \correctchoice{size}
+        \correctchoice{shape}
+        \correctchoice{texture}
+        \correctchoice{position}
+    \end{choices}
+    \explain{You can encode a categorical variable any of these visual attributes.}
+\end{questionmult}
+
+\begin{questionmult}{9.2}
+    Which problems are linked with the Curse of Dimensionality?
+    \begin{choices}
+        \correctchoice{difficult to plot: it is much harder to visualize information}
+        \correctchoice{concentration of distances: distances become numerically similar}
+        \wrongchoice{computer limitation: a dataset can not have more than 3 dimensions}
+        \wrongchoice{impossible to analyze: no technique can reduce the number of dimensions}
+    \end{choices}
+    \explain{Plots are often limited to 3 dimensions, but not datasets. Distances are harder to interpret with higher dimensions. Dimension reductions techniques can be used to address these problems (e.g., PCA).}
+\end{questionmult}
+
+\begin{question}{9.3}
+    Which one of these plots is commonly used to present the statistical measures of a data distribution?
+    \begin{choices}
+        \wrongchoice{a bar plot}
+        \correctchoice{a box plot}
+        \wrongchoice{a jitter plot}
+        \wrongchoice{a contour plot}
+    \end{choices}
+    \explain{A box plot displays the median, quartiles, minimum, maximum and possibly the mean of a data distribution.}
+\end{question}
+
+\section{Machine Learning: supervised learning}
+
+\begin{questionmult}{10.1}
+    Which of these tasks are associated to Supervised Learning?
+    \begin{choices}
+        \wrongchoice{clustering}
+        \correctchoice{regression}
+        \correctchoice{classification}
+        \wrongchoice{reinforcement learning}
+    \end{choices}
+    \explain{e.g., classification will it be rainy or sunny tomorrow, regression: what will be the temperature tomorrow}
+\end{questionmult}
+
+\begin{question}{10.2}
+    What does the K parameter of the K-Nearest Neighbor algorithm refer to?
+    \begin{choices}
+        \wrongchoice{the number of centers in the dataset}
+        \wrongchoice{the number of classes in the dataset}
+        \wrongchoice{the number of features in the dataset}
+        \correctchoice{something independent of the dataset}
+    \end{choices}
+    \explain{K is a parameter that limits the number of items considered by the algorithm. With K=3, only 3 neighbors will be considered.}
+\end{question}
+
+\begin{questionmult}{10.3}
+    Which of these problems are associated with over-fitting?
+    \begin{choices}
+        \wrongchoice{high bias}
+        \correctchoice{high variance}
+        \wrongchoice{high training error}
+        \correctchoice{high testing error}
+    \end{choices}
+    \explain{Over-fitting is associated with high variance and high testing error.}
+\end{questionmult}
+
+\begin{questionmult}{10.4}
+    What can you change to improve the prediction of a supervised machine learning model?
+    \begin{choices}
+        \wrongchoice{the target output}
+        \correctchoice{the input features}
+        \correctchoice{the training algorithm}
+        \wrongchoice{the programming language}
+    \end{choices}
+    \explain{The features and algorithm can be changed to find a better fit. Changing the programming language would have no effect, and changing the target output would change the problem.}
+\end{questionmult}
+
+\begin{questionmult}{10.5}
+    Which features would you keep to predict the surviving passengers of the Titanic disaster?
+    \begin{choices}
+        \correctchoice{passenger age}
+        \correctchoice{passenger sex}
+        \wrongchoice{passenger name}
+        \correctchoice{passenger class}
+    \end{choices}
+    \explain{Passenger name values are to distinct to provide generic predictions.}
+\end{questionmult}
+
+\section{Machine learning: unsupervised learning}
+
+\begin{question}{11.1}
+    What is the concept of Feature Pruning?
+    \begin{choices}
+        \correctchoice{to remove bad features}
+        \wrongchoice{to select good features}
+        \wrongchoice{to create random features}
+        \wrongchoice{to normalize all features}
+    \end{choices}
+    \explain{Feature Pruning removes bad features (outlier, random, extreme values \ldots)}
+\end{question}
+
+\begin{questionmult}{11.2}
+    What are the benefits of normalizing features?
+    \begin{choices}
+        \wrongchoice{to remove entries that contain outliers}
+        \wrongchoice{to fill columns that contain missing values}
+        \wrongchoice{to convert features to human readable numbers}
+        \correctchoice{to rescale features so they have the same magnitude}
+    \end{choices}
+    \explain{Normalization is mandatory to rescale features for some machine learning algorithms.}
+\end{questionmult}
+
+\begin{question}{11.3}
+    What is the difference between supervised and unsupervised learning?
+    \begin{choices}
+        \wrongchoice{features are not available in unsupervised learning}
+        \wrongchoice{algorithms are not available in unsupervised learning}
+        \correctchoice{target labels are not available in unsupervised learning}
+        \wrongchoice{human supervision is not available in unsupervised learning}
+    \end{choices}
+    \explain{Contrary to supervised learning, unsupervised learning lacks data labels for training.}
+\end{question}
+
+\begin{question}{11.4}
+    When does the K-Means algorithm converge?
+    \begin{choices}
+        \wrongchoice{when the validation score reaches 100}
+        \correctchoice{when the cluster centers stay the same}
+        \wrongchoice{when all data points are associated with a cluster}
+        \wrongchoice{when the distance between cluster centers reaches 0}
+    \end{choices}
+    \explain{K-Means converges when the algorithm does not change cluster centers.}
+\end{question}
+
+\begin{questionmult}{11.5}
+    Which steps are performed by the K-Means algorithm?
+    \begin{choices}
+        \correctchoice{assign each point to its closest center}
+        \correctchoice{initialize the cluster centers at random}
+        \wrongchoice{find the k nearest neighbors for each point}
+        \correctchoice{update the cluster centers based on the points associated to them}
+    \end{choices}
+    \explain{K-Means does not find the nearest neighbors like the k-NN algorithm.}
+\end{questionmult}
+
+}
+
+\end{document}
